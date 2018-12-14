@@ -6,6 +6,8 @@
 package softwareag.mini.project.activity;
 
 import java.util.InputMismatchException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,10 +42,10 @@ public class ProductActivity {
             System.out.println("Write : ");
             String option = scanner.next();
             if (option.equals("1")) {
-//                this.addProduct();
-//                break;
+                this.showProduct();
+                break;
             } else if (option.equals("2")) {
-                this.addProduct();
+            	this.addProduct();
                 break;
             } else if (option.equals("3")) {
                 
@@ -55,6 +57,7 @@ public class ProductActivity {
                 System.out.println("Wrong option, please choose the right option below :");
             }
         }
+        new MainActivity();
     }
     
     public void addProduct() {
@@ -87,7 +90,17 @@ public class ProductActivity {
             } else if (answer.equals("false")) {
                 this.welcomeProductActivity();
                 break;
-            } 
+            }
         }
     }   
+        
+    public void showProduct() {
+        try {
+            db.readDataBase();
+
+        } catch (Exception ex) {
+            Logger.getLogger(ProductActivity.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
 }

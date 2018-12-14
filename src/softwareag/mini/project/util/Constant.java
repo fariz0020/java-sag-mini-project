@@ -11,8 +11,8 @@ package softwareag.mini.project.util;
  */
 public class Constant {
     
-    public static final String DB_USER = "root";
-    public static final String DB_PASSWORD = "";
+    public static final String DB_USER = "adminuser";
+    public static final String DB_PASSWORD = "adminuser";
     public static final String DB_SCHEMA = "sag_mini_project_db";
     public static final String DB_USESSL = "false";
     public static final String DB_SERVERTIMEZONE = "UTC";
