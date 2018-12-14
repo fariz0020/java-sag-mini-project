@@ -12,7 +12,7 @@ package softwareag.mini.project.model;
 public class Product {
     
     private String name, createdAt, updatedAt, deletedAt;
-    private int id, quantity;
+    private int id, quantity, idCategory;
 
     public Product() {
     }
@@ -63,6 +63,14 @@ public class Product {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public int getIdCategory() {
+        return idCategory;
+    }
+
+    public void setIdCategory(int idCategory) {
+        this.idCategory = idCategory;
     }
 
     @Override
