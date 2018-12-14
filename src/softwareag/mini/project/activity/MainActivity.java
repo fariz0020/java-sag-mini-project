@@ -32,8 +32,9 @@ public class MainActivity {
             System.out.println("0. Exit Application");
             System.out.println("Write : ");
             String option = scanner.nextLine();
-            if (option == "1") {
-                
+            if (option.equals("1")) {
+                new ProductActivity();
+                break;
             } else if (option == "2") {
                 
             } else if (option == "3") {
