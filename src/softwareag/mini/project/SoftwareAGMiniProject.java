@@ -5,6 +5,8 @@
  */
 package softwareag.mini.project;
 
+import softwareag.mini.project.activity.MainActivity;
+
 /**
  *
  * @author fariz.nurzam
@@ -15,7 +17,7 @@ public class SoftwareAGMiniProject {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        MainActivity main = new MainActivity();
     }
     
 }
