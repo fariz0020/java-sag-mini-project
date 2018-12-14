@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
 import java.util.Properties;
+import softwareag.mini.project.model.Product;
 
 /**
  *
@@ -78,6 +79,36 @@ public class DatabaseUtil {
             close();
         }
 
+    }
+    
+    public void addProduct(Product product) throws Exception {        
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            
+            Properties properties = new Properties();
+            properties.setProperty("user", Constant.DB_USER);
+            properties.setProperty("password", Constant.DB_PASSWORD);
+            properties.setProperty("useSSL", Constant.DB_USESSL);
+            properties.setProperty("serverTimezone", Constant.DB_SERVERTIMEZONE);
+            
+            connect = DriverManager
+                    .getConnection("jdbc:mysql://localhost:3306/"+Constant.DB_SCHEMA, properties);
+            
+            preparedStatement = connect
+                    .prepareStatement("insert into  products(name, id_category) values (?, ?)");
+            // "myuser, webpage, datum, summary, COMMENTS from feedback.comments");
+            // Parameters start with 1
+            preparedStatement.setString(1, product.getName());
+            preparedStatement.setInt(2, product.getIdCategory());
+            preparedStatement.executeUpdate();
+            
+            System.out.println("New product has been added");
+            
+        } catch (Exception e ) {
+            throw e;
+        } finally {
+            close();
+        }
     }
     
     private void writeMetaData(ResultSet resultSet) throws SQLException {

@@ -35,13 +35,13 @@ public class MainActivity {
             if (option.equals("1")) {
                 new ProductActivity();
                 break;
-            } else if (option == "2") {
+            } else if (option.equals("2")) {
                 
-            } else if (option == "3") {
+            } else if (option.equals("3")) {
                 
-            } else if (option == "4") {
+            } else if (option.equals("4")) {
                 
-            } else if (option == "0") {
+            } else if (option.equals("0")) {
                 System.out.println("Thank you for using the application");
                 System.exit(0);
             } else {
