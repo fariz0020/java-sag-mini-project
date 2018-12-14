@@ -5,6 +5,8 @@
  */
 package softwareag.mini.project.activity;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,27 +40,36 @@ public class ProductActivity {
             System.out.println("Write : ");
             String option = scanner.nextLine();
             if (option.equals("1")) {
-                this.addProduct();
+                this.showProduct();
                 break;
-            } else if (option == "2") {
+            } else if (option.equals("2")) {
+            	this.addProduct();
+                break;
+            } else if (option.equals("3")) {
                 
-            } else if (option == "3") {
+            } else if (option.equals("4")) {
                 
-            } else if (option == "4") {
-                
-            } else if (option == "0") {
+            } else if (option.equals("0")) {
                 new MainActivity();
             } else {
                 System.out.println("Wrong option, please choose the right option below :");
             }
         }
+        new MainActivity();
     }
-    
-    public void addProduct() {
+
+	private void addProduct() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void showProduct() {
         try {
             db.readDataBase();
+
         } catch (Exception ex) {
             Logger.getLogger(ProductActivity.class.getName()).log(Level.SEVERE, null, ex);
         }
     }   
+    
 }

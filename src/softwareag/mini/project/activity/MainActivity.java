@@ -35,18 +35,22 @@ public class MainActivity {
             if (option.equals("1")) {
                 new ProductActivity();
                 break;
-            } else if (option == "2") {
-                
-            } else if (option == "3") {
-                
-            } else if (option == "4") {
-                
-            } else if (option == "0") {
-                System.out.println("Thank you for using the application");
+            } else if (option.equals("2")) {
+            	new CategoryActivity();
+                break;
+            } else if (option.equals("3")) {
+            	new PurchaseActivity();
+                break;
+            } else if (option.equals("4")) {
+            	new SalesActivity();
+                break;
+            } else if (option.equals("0")) {
+                System.out.println("Thank you for using IMan APP - Inventory Management Application");
                 System.exit(0);
             } else {
                 System.out.println("Wrong option, please choose the right option below :");
             }
         }
+        
     }
 }
