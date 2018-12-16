@@ -28,9 +28,9 @@ public class CategoryActivity {
         this.welcomeCategoryActivity();
     }
 
-	private void welcomeCategoryActivity() {
-		// TODO Auto-generated method stub
-		boolean loop = false;
+    private void welcomeCategoryActivity() {
+        // TODO Auto-generated method stub
+        boolean loop = false;
         System.out.println("===== Manage Product ======");
         System.out.println("Please choose the option to manage product");
         while (loop == false) {
@@ -57,16 +57,15 @@ public class CategoryActivity {
             }
         }
         new MainActivity();
-	}
+    }
 
-	private void showCategory() {
-		// TODO Auto-generated method stub
-		try {
+    private void showCategory() {
+            //  TODO Auto-generated method stub
+        try {
             db.getCategories();
-          
         } catch (Exception ex) {
             Logger.getLogger(CategoryActivity.class.getName()).log(Level.SEVERE, null, ex);
         }
-	}
+    }
     
 }
