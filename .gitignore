@@ -3,3 +3,9 @@
 
 .classpath
 .project
+.idea
+
+misc.xml
+modules.xml
+private.xml
+
