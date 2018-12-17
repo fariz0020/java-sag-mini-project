@@ -37,8 +37,8 @@ public class PurchaseActivity implements PurchaseActivityInterface{
         System.out.println("Please choose the option to manage purchase");
         while (loop == false) {
             System.out.println("1. Show All Purchases");
-            System.out.println("2. Add Product");
-            System.out.println("3. Search Product");
+            System.out.println("2. Add Purchase");
+            System.out.println("3. Advance Search Purchase");
             System.out.println("0. Back");
             System.out.println("Write : ");
             String option = scanner.next();
@@ -49,7 +49,8 @@ public class PurchaseActivity implements PurchaseActivityInterface{
             	this.addPurchase();
                 break;
             } else if (option.equals("3")) {
-                
+            	this.searchPurchase();
+                break;
             } else if (option.equals("0")) {
                 new MainActivity();
             } else {
@@ -117,7 +118,57 @@ public class PurchaseActivity implements PurchaseActivityInterface{
 
     @Override
     public void searchPurchase() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println(helper.textH2("Advance Search Purchase"));
+        boolean loop = false;
+        
+        System.out.println("Please choose the option to advance search purchase");
+        while (loop == false) {
+            System.out.println("1. Search by 1 date");
+            System.out.println("2. Search between 2 dates");
+            
+            System.out.println("0. Back");
+            System.out.print("Write : ");
+            String option = scanner.next();
+            if (option.equals("1")) {
+                this.advanceSearchPurchase(option);
+                break;
+            } else if (option.equals("2")) {
+                //TODO: lanjut disini
+                this.advanceSearchPurchase(option);
+                break;
+            } else if (option.equals("0")) {
+                new PurchaseActivity();
+            } else {
+                System.out.println("Wrong option, please choose the right option below :");
+            }
+        }
+        System.exit(0);
+    }
+    
+    private void advanceSearchPurchase(String option) {
+        String date, date2;
+        System.out.println("Input date with format yyyy-mm-dd");
+        date = scanner.next();
+        System.out.println(date);
+        
+        if (option.equals("1")) {
+            try {
+                db.getPurchaseBySearch(date, "");
+            } catch (Exception ex) {
+                Logger.getLogger(PurchaseActivity.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {    
+            System.out.println("Input last date with format yyyy-mm-dd");
+            date2 = scanner.next();
+            System.out.println(date2);
+            try {
+                db.getPurchaseBySearch(date, date2);
+            } catch (Exception ex) {
+                Logger.getLogger(PurchaseActivity.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        helper.endSection();
     }
     
 }

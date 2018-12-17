@@ -663,4 +663,66 @@ public class DatabaseUtil {
             close();
         }
     }
+    
+    public void getPurchaseBySearch(String date1, String date2) throws Exception {
+        int currentQuantity = 0, updateQuantity = 0;
+        String query = "";
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            
+            Properties properties = new Properties();
+            properties.setProperty("user", Constant.DB_USER);
+            properties.setProperty("password", Constant.DB_PASSWORD);
+            properties.setProperty("useSSL", Constant.DB_USESSL);
+            properties.setProperty("serverTimezone", Constant.DB_SERVERTIMEZONE);
+            
+            connect = DriverManager
+                    .getConnection("jdbc:mysql://localhost:3306/"+Constant.DB_SCHEMA, properties);
+
+            if (date2.isEmpty())
+                query = String.format("SELECT p.name, sum(pp.quantity) quantity FROM products p "
+                        + "JOIN products_purchases pp ON p.id = pp.id_product "
+                        + "JOIN purchases ps ON ps.id = pp.id_purchase "
+                        + "WHERE ps.created_at LIKE '%s%%' AND ps.deleted_at IS NULL "
+                        + "GROUP BY p.name", date1);
+            else
+                query = String.format("SELECT p.id, count(pp.*) total_item, sum(pp.quantity) total_quantity "
+                        + "FROM purchases p JOIN products_purchases pp ON p.id = pp.id_purchase "
+                        + "WHERE created_at BETWEEN '%s 00:00:00' AND '%s 23:59:59'", date1, date2);
+            
+            System.out.println(query);
+            statement = connect.createStatement();
+            ResultSet resultSet = statement.executeQuery(query);
+            
+            int size = 0;
+            if (resultSet != null) 
+            {
+                resultSet.last();
+                size = resultSet.getRow();
+                resultSet.beforeFirst();
+                this.writeGetPurchaseAdvance(resultSet, size);
+            }
+            
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            close();
+        }
+        
+    }
+    
+    public void writeGetPurchaseAdvance(ResultSet resultSet, int max) throws SQLException {
+        if (resultSet.next() == false ) 
+            System.out.println("The result is empty");
+        else {
+            resultSet.beforeFirst();
+            while (resultSet.next()) {
+                System.out.println("Result " + resultSet.getRow() + " of " + max + " data");
+                System.out.println("Name: " + resultSet.getString("name"));
+                System.out.println("Total quantity: " + resultSet.getString("quantity"));
+                System.out.println("");
+            }
+        }
+        
+    }
 }
