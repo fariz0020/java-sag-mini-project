@@ -516,4 +516,59 @@ public class DatabaseUtil {
             }
         }
     }
+    
+    public void getAllPurchases() throws Exception {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            
+            Properties properties = new Properties();
+            properties.setProperty("user", Constant.DB_USER);
+            properties.setProperty("password", Constant.DB_PASSWORD);
+            properties.setProperty("useSSL", Constant.DB_USESSL);
+            properties.setProperty("serverTimezone", Constant.DB_SERVERTIMEZONE);
+            
+            connect = DriverManager
+                    .getConnection("jdbc:mysql://localhost:3306/"+Constant.DB_SCHEMA, properties);
+
+            statement = connect.createStatement();
+            resultSet = statement
+                    .executeQuery("SELECT p.id, count(pp.id_product) total_item, sum(pp.quantity) total_quantity, "
+                            + "p.created_at, p.updated_at, p.deleted_at  "
+                            + "FROM purchases p JOIN products_purchases pp ON p.id = pp.id_purchase "
+                            + "WHERE p.deleted_at IS NULL "
+                            + "GROUP BY p.id");
+            
+            int size = 0;
+            if (resultSet != null) 
+            {
+                resultSet.last();
+                size = resultSet.getRow();
+                resultSet.beforeFirst();
+                writeGetPurchase(resultSet, size);
+            }
+               
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            close();
+        }
+    }
+    
+    public void writeGetPurchase(ResultSet resultSet, int max) throws SQLException {
+        if (resultSet.next() == false ) 
+            System.out.println("The result is empty");
+        else {
+            resultSet.beforeFirst();
+            while (resultSet.next()) {
+                System.out.println("Result " + resultSet.getRow() + " of " + max + " data");
+                System.out.println("ID: " + resultSet.getString("id"));
+                System.out.println("Total item: " + resultSet.getString("total_item"));
+                System.out.println("Total quantity: " + resultSet.getString("total_quantity"));
+                System.out.println("Created at: " + resultSet.getString("created_at"));
+                System.out.println("Last update: " + resultSet.getString("updated_at"));
+                System.out.println("Deleted at: " + ((resultSet.getString("deleted_at") != null) ? resultSet.getString("deleted_at") : "-"));
+                System.out.println("");
+            }
+        }
+    }
 }
