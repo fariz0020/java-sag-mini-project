@@ -7,12 +7,16 @@ package softwareag.mini.project.util;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import softwareag.mini.project.model.Product;
 
 /**
@@ -24,6 +28,7 @@ public class DatabaseUtil {
     private Statement statement = null;
     private PreparedStatement preparedStatement = null;
     private ResultSet resultSet = null;
+    private static final Logger LOGGER = Logger.getLogger( DatabaseUtil.class.getName() );
     
     public void readDataBase() throws Exception {
         try {
@@ -202,6 +207,73 @@ public class DatabaseUtil {
             }
         } catch (Exception e) {
 
+        }
+    }
+    
+    public void getProductBySearch(String keyword, String filter) throws Exception {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            String sql = "";
+            
+            Properties properties = new Properties();
+            properties.setProperty("user", Constant.DB_USER);
+            properties.setProperty("password", Constant.DB_PASSWORD);
+            properties.setProperty("useSSL", Constant.DB_USESSL);
+            properties.setProperty("serverTimezone", Constant.DB_SERVERTIMEZONE);
+            
+            connect = DriverManager
+                    .getConnection("jdbc:mysql://localhost:3306/"+Constant.DB_SCHEMA, properties);
+
+            if (filter.equals("name"))
+                sql = String.format("SELECT p.*, c.name AS category_name FROM products p "
+                            + "LEFT JOIN categories c ON p.id_category = c.id "
+                            + "WHERE p.name = '%s' OR p.name LIKE '%%%s' OR p.name LIKE '%s%%'", 
+                        keyword, keyword, keyword);
+            else if (filter.equals("quantity"))
+                sql = String.format("SELECT *, c.name AS category_name FROM products p "
+                                + "JOIN categories c ON p.id_category = c.id "
+                                + "WHERE p.quantity = '%s'", keyword);
+            else if (filter.equals("category"))
+                sql = String.format("SELECT *, c.name AS category_name FROM products p "
+                            + "JOIN categories c ON p.id_category = c.id "
+                            + "WHERE c.name = '%s' OR c.name LIKE '%%%s' OR c.name LIKE '%s%%'",
+                        keyword, keyword, keyword);
+            
+            preparedStatement = connect.prepareStatement(sql);
+            LOGGER.log( Level.INFO, "// query : " + preparedStatement.toString() );
+            resultSet = preparedStatement.executeQuery();
+            
+            int size = 0;
+            if (resultSet != null) 
+            {
+                resultSet.last();
+                size = resultSet.getRow();
+                resultSet.beforeFirst();
+                writeGetProductBySearch(resultSet, size);
+            }
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            close();
+        }
+    }
+    
+    public void writeGetProductBySearch(ResultSet resultSet, int max) throws SQLException {
+        if (resultSet.next() == false ) 
+            System.out.println("The result is empty");
+        else {
+            resultSet.beforeFirst();
+            while (resultSet.next()) {
+                System.out.println("Result " + resultSet.getRow() + " of " + max + " data");
+                System.out.println("ID: " + resultSet.getString("id"));
+                System.out.println("Name: " + resultSet.getString("name"));
+                System.out.println("Quantity: " + resultSet.getString("quantity"));
+                System.out.println("Category: " + ((resultSet.getString("category_name") != null) ? resultSet.getString("category_name") : "-"));
+                System.out.println("Created at: " + resultSet.getString("created_at"));
+                System.out.println("Last update: " + resultSet.getString("updated_at"));
+                System.out.println("Deleted at: " + ((resultSet.getString("deleted_at") != null) ? resultSet.getString("deleted_at") : "-"));
+                System.out.println("");
+            }
         }
     }
 }

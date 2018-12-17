@@ -11,4 +11,14 @@ package softwareag.mini.project.interfaces;
  */
 public interface ProductActivityInterface {
     
+    void welcomeProductActivity();
+    
+    void addProduct();
+    
+    void showProduct();
+    
+    void searchProduct();
+    
+    void searchProductByFilter(String string);
+    
 }
