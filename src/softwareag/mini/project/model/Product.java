@@ -11,7 +11,7 @@ package softwareag.mini.project.model;
  */
 public class Product {
     
-    private String name, createdAt, updatedAt, deletedAt;
+    private String name, createdAt, updatedAt, deletedAt, categoryName;
     private int id, quantity, idCategory;
 
     public Product() {
@@ -73,8 +73,17 @@ public class Product {
         this.idCategory = idCategory;
     }
 
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
     @Override
     public String toString() {
-        return "Product{" + "name=" + name + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", deletedAt=" + deletedAt + ", id=" + id + ", quantity=" + quantity + '}';
+        return "Product{" + "id=" + id +  ", name=" + name + ", quantity=" + quantity + ", idCategory=" + idCategory + ", categoryName=" + categoryName + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", deletedAt=" + deletedAt +'}';
     }
+    
 }
