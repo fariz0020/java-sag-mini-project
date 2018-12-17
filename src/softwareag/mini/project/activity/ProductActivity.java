@@ -21,6 +21,7 @@ import softwareag.mini.project.util.Helper;
  * @author fariz.nurzam
  */
 public class ProductActivity implements ProductActivityInterface {
+    
     private Scanner scanner = null;
     private DatabaseUtil db = null;
     private Helper helper = null;
