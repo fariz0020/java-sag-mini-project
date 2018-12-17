@@ -71,7 +71,48 @@ public class PurchaseActivity implements PurchaseActivityInterface{
 
     @Override
     public void addPurchase() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println(helper.textH2("Add Purchase"));
+        boolean option = false;
+        int idPurchase = 0;
+        
+        try {
+            idPurchase = db.addPurchase();
+            System.out.println("Your purchase ID : "+idPurchase);
+        
+            while(!option) {
+                System.out.print("How many product do you want to purchase ? ");
+
+                String manyProduct = scanner.next();
+                if (manyProduct.matches("[0-9]+")) {
+                    for(int i = 0; i < Integer.valueOf(manyProduct); i++) {
+                        this.addProductOfPurchase(idPurchase, i+1);
+                    }
+                    break;
+                } else {
+                    System.out.println("Please write right number");
+                }
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(PurchaseActivity.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            System.out.println("Purchase #"+idPurchase+" successed");
+            helper.endSection();      
+        }
+    }
+    
+    private void addProductOfPurchase(int idPurchase, int i) {
+        try {
+            db.readDataBase();
+            System.out.println("Product #"+i);
+            System.out.print("Please choose product by ID : ");
+            int idProduct = scanner.nextInt();
+            System.out.print("Please write it quantity : ");
+            int quantity = scanner.nextInt();
+            
+            db.addProductPurchase(idProduct, idPurchase, quantity);
+        } catch (Exception ex) {
+            Logger.getLogger(PurchaseActivity.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+        }
     }
 
     @Override
