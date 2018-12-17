@@ -571,4 +571,96 @@ public class DatabaseUtil {
             }
         }
     }
+    
+    public int addPurchase() throws Exception {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            
+            Properties properties = new Properties();
+            properties.setProperty("user", Constant.DB_USER);
+            properties.setProperty("password", Constant.DB_PASSWORD);
+            properties.setProperty("useSSL", Constant.DB_USESSL);
+            properties.setProperty("serverTimezone", Constant.DB_SERVERTIMEZONE);
+            
+            connect = DriverManager
+                    .getConnection("jdbc:mysql://localhost:3306/"+Constant.DB_SCHEMA, properties);
+
+            preparedStatement = connect.prepareStatement("INSERT INTO purchases VALUES ()", Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.executeUpdate();
+            
+            ResultSet rs = preparedStatement.getGeneratedKeys();
+            
+            if(rs.next()){
+                return rs.getInt(1);
+            }
+            return 0;
+            
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            close();
+        }
+    }
+    
+    public void addProductPurchase(int idProduct, int idPurchase, int quantity) throws Exception {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            
+            Properties properties = new Properties();
+            properties.setProperty("user", Constant.DB_USER);
+            properties.setProperty("password", Constant.DB_PASSWORD);
+            properties.setProperty("useSSL", Constant.DB_USESSL);
+            properties.setProperty("serverTimezone", Constant.DB_SERVERTIMEZONE);
+            
+            connect = DriverManager
+                    .getConnection("jdbc:mysql://localhost:3306/"+Constant.DB_SCHEMA, properties);
+
+            statement = connect.createStatement();
+            String query = String.format("INSERT INTO products_purchases(id_product, id_purchase, quantity) VALUES (%d, %d, %d)", 
+                    idProduct, idPurchase, quantity);
+            statement.execute(query);
+            
+            this.updateProductQuantity(idProduct, quantity, "+");
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            close();
+        }
+    }
+    
+    private void updateProductQuantity(int idProduct, int quantity, String operator) throws Exception {
+        int currentQuantity = 0, updateQuantity = 0;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            
+            Properties properties = new Properties();
+            properties.setProperty("user", Constant.DB_USER);
+            properties.setProperty("password", Constant.DB_PASSWORD);
+            properties.setProperty("useSSL", Constant.DB_USESSL);
+            properties.setProperty("serverTimezone", Constant.DB_SERVERTIMEZONE);
+            
+            connect = DriverManager
+                    .getConnection("jdbc:mysql://localhost:3306/"+Constant.DB_SCHEMA, properties);
+
+            String query = String.format("SELECT quantity FROM products WHERE id = %d", idProduct);
+            statement = connect.createStatement();
+            ResultSet resultSet = statement.executeQuery(query);
+            
+            if(resultSet.next()){
+                currentQuantity = resultSet.getInt(1);
+            }
+            
+            updateQuantity = (operator.equals("+")) ? currentQuantity + quantity : currentQuantity - quantity;
+            
+            String updateQuery = String.format("UPDATE products SET quantity = %d WHERE id = %d", 
+                    updateQuantity, idProduct);
+            preparedStatement = connect.prepareStatement(updateQuery);
+            
+            preparedStatement.executeUpdate();
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            close();
+        }
+    }
 }
