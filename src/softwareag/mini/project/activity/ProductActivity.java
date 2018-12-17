@@ -53,9 +53,11 @@ public class ProductActivity implements ProductActivityInterface {
             	this.addProduct();
                 break;
             } else if (option.equals("3")) {
-                
+            	this.updateProduct();
+                break;
             } else if (option.equals("4")) {
-                
+            	this.deleteProduct();
+                break;
             } else if (option.equals("5")) {
                 this.searchProduct();
                 break;
@@ -66,6 +68,15 @@ public class ProductActivity implements ProductActivityInterface {
             }
         }
         new MainActivity();
+    }
+
+	public void showProduct() {
+        try {
+            db.readDataBase();
+
+        } catch (Exception ex) {
+            Logger.getLogger(ProductActivity.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     public void addProduct() {
@@ -102,14 +113,15 @@ public class ProductActivity implements ProductActivityInterface {
         }
     }   
         
-    public void showProduct() {
-        try {
-            db.readDataBase();
+    private void updateProduct() {
+		// TODO Auto-generated method stub
+		
+	}
 
-        } catch (Exception ex) {
-            Logger.getLogger(ProductActivity.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+	private void deleteProduct() {
+		// TODO Auto-generated method stub
+		
+	}
 
     public void searchProduct() {
         boolean loop = false;
