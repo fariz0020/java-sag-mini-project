@@ -9,7 +9,9 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -826,7 +828,6 @@ public class DatabaseUtil {
     }
     
     public void getSaleBySearch(String date1, String date2, String order) throws Exception {
-        int currentQuantity = 0, updateQuantity = 0;
         String query = "";
         StringBuilder queryBuilder = new StringBuilder();
 
@@ -875,8 +876,67 @@ public class DatabaseUtil {
             throw e;
         } finally {
             close();
+        }   
+    }
+    
+    public List<Product> getReportByProductCategory(String report, int idCategory) throws Exception {
+        String query = "";
+        StringBuilder queryBuilder = new StringBuilder();
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            
+            Properties properties = new Properties();
+            properties.setProperty("user", Constant.DB_USER);
+            properties.setProperty("password", Constant.DB_PASSWORD);
+            properties.setProperty("useSSL", Constant.DB_USESSL);
+            properties.setProperty("serverTimezone", Constant.DB_SERVERTIMEZONE);
+            
+            connect = DriverManager
+                    .getConnection("jdbc:mysql://localhost:3306/"+Constant.DB_SCHEMA, properties);
+
+            if (report.equals("sales")) {
+                query = String.format("SELECT s.created_at, p.id, p.name, ps.quantity, c.name category_name " +
+                    "FROM products p " +
+                    "JOIN products_sales ps ON ps.id_product = p.id " +
+                    "JOIN sales s ON ps.id_sale = s.id " +
+                    "JOIN categories c ON p.id_category = c.id " +
+                    "WHERE c.id = %d " +
+                    "ORDER BY s.created_at DESC", idCategory);
+            } else if (report.equals("purchase")) {
+                query = String.format("SELECT s.created_at, p.id, p.name, ps.quantity, c.name category_name " +
+                    "FROM products p " +
+                    "JOIN products_purchases ps ON ps.id_product = p.id " +
+                    "JOIN purchases s ON ps.id_purchase = s.id " +
+                    "JOIN categories c ON p.id_category = c.id " +
+                    "WHERE c.id = 1 " +
+                    "ORDER BY s.created_at DESC");
+            }
+            
+            queryBuilder.append(query);
+            statement = connect.createStatement();
+            ResultSet resultSet = statement.executeQuery(queryBuilder.toString());
+            
+            return this.writeGetReport(resultSet);
+            
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            close();
+        }   
+    }
+    
+    private List<Product> writeGetReport(ResultSet resultSet) throws SQLException {
+        List<Product> dataList = new ArrayList<>();
+        while (resultSet.next()) {
+            Product product = new Product();
+            product.setCreatedAt(resultSet.getString("created_at"));
+            product.setName(resultSet.getString("name"));
+            product.setCategoryName(resultSet.getString("category_name"));
+            product.setQuantity(resultSet.getInt("quantity"));
+            dataList.add(product);
         }
-        
+        return dataList;
     }
   
 }
