@@ -17,6 +17,9 @@ public interface PurchaseActivityInterface {
     
     void addPurchase();
     
+    void addProductOfPurchase(int idPurchase, int i);
+    
     void searchPurchase();
     
+    void advanceSearchPurchase(String option, String order);
 }

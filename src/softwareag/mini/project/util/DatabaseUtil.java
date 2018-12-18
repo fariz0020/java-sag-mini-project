@@ -424,9 +424,11 @@ public class DatabaseUtil {
         }
     }
     
-    public void getPurchaseBySearch(String date1, String date2) throws Exception {
+    public void getPurchaseBySearch(String date1, String date2, String order) throws Exception {
         int currentQuantity = 0, updateQuantity = 0;
         String query = "";
+        StringBuilder queryBuilder = new StringBuilder();
+
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             
@@ -446,13 +448,18 @@ public class DatabaseUtil {
                         + "WHERE ps.created_at LIKE '%s%%' AND ps.deleted_at IS NULL "
                         + "GROUP BY p.name", date1);
             else
-                query = String.format("SELECT p.id, count(pp.*) total_item, sum(pp.quantity) total_quantity "
-                        + "FROM purchases p JOIN products_purchases pp ON p.id = pp.id_purchase "
-                        + "WHERE created_at BETWEEN '%s 00:00:00' AND '%s 23:59:59'", date1, date2);
+                query = String.format("SELECT p.name, sum(pp.quantity) quantity FROM products p "
+                        + "JOIN products_purchases pp ON p.id = pp.id_product "
+                        + "JOIN purchases ps ON ps.id = pp.id_purchase "
+                        + "WHERE ps.created_at BETWEEN '%s 00:00:00' AND '%s 23:59:59' "
+                        + "AND ps.deleted_at IS NULL "
+                        + "GROUP BY p.name", date1, date2);
             
-            System.out.println(query);
+            queryBuilder.append(query);
+            queryBuilder.append(" ORDER BY quantity "+order);
+            
             statement = connect.createStatement();
-            ResultSet resultSet = statement.executeQuery(query);
+            ResultSet resultSet = statement.executeQuery(queryBuilder.toString());
             
             int size = 0;
             if (resultSet != null) 
