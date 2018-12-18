@@ -12,7 +12,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import softwareag.mini.project.model.Category;
+import softwareag.mini.project.model.Product;
 import softwareag.mini.project.util.DatabaseUtil;
+import softwareag.mini.project.util.Helper;
 
 /**
  *
@@ -22,10 +24,13 @@ public class CategoryActivity {
     
     private Scanner scanner = null;
     private DatabaseUtil db = null;
+    private Helper helper = null;
+    private static final Logger LOGGER = Logger.getLogger( CategoryActivity.class.getName() );
     
     public CategoryActivity() {
     	scanner = new Scanner(System.in);
         db = new DatabaseUtil();
+        helper = new Helper();
         this.welcomeCategoryActivity();
     }
 
@@ -55,7 +60,7 @@ public class CategoryActivity {
             } else if (option.equals("4")) {
             	this.deleteCategory();
                 break;
-            } else if (option.equals("4")) {
+            } else if (option.equals("5")) {
             	this.searchCategory();
                 break;
             } else if (option.equals("0")) {
@@ -83,19 +88,12 @@ public class CategoryActivity {
         String name = scanner.next();
         category.setName(name);
         System.out.println("Category name : "+category.getName());
-//        System.out.println("Category list : ");
-//        //TOOD:5show category list
-//        System.out.println("Category ID : ");
-//        category.setIdCategory(scanner.nextInt());
-//        System.out.println("New Product : ");
-//        System.out.println("- name : "+category.getName());
-//        System.out.println("- category ID : "+category.getIdCategory());
-        
+
         boolean loop = false;
         while(loop == false) {  
-            System.out.println("Are you sure to insert new product ? (true/false)");
+            System.out.println("Are you sure to insert new category ? (Yes/No)");
             String answer = scanner.next();
-            if (answer.equals("true")) {
+            if (answer.equals("Yes")) {
                 try {
                     db.addCategory(category);
                     this.welcomeCategoryActivity();
@@ -103,7 +101,7 @@ public class CategoryActivity {
                 } catch (Exception ex) {
                     Logger.getLogger(CategoryActivity.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } else if (answer.equals("false")) {
+            } else if (answer.equals("No")) {
                 this.welcomeCategoryActivity();
                 break;
             }
@@ -112,16 +110,105 @@ public class CategoryActivity {
     
     private void updateCategory() {
 		// TODO Auto-generated method stub
-		
+        try {
+            db.getCategories();
+        } catch (Exception ex) {
+            Logger.getLogger(CategoryActivity.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    	Category category = new Category();
+        System.out.println("==== Update Category =====");
+        System.out.println("Choose Category ID to update : ");
+        int id = scanner.nextInt();
+        category.setId(id);
+        System.out.println("- Category ID : "+category.getId());
+        
+        String name = scanner.next();
+        category.setName(name);
+        System.out.println("- Category Name : "+category.getName());
+        
+        boolean loop = false;
+        while(loop == false) {  
+            System.out.println("Are you sure to update category? (Yes/No)");
+            String answer = scanner.next();
+            if (answer.equals("Yes")) {
+                try {
+                    db.updateCategory(category);
+                    this.welcomeCategoryActivity();
+                    break;
+                } catch (Exception ex) {
+                    Logger.getLogger(CategoryActivity.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else if (answer.equals("No")) {
+                this.welcomeCategoryActivity();
+                break;
+            }
+        }
 	}
     
-    private void deleteCategory() {
+    private void deleteCategory(){
 		// TODO Auto-generated method stub
-		
+		try {
+            db.getCategories();
+        } catch (Exception ex) {
+            Logger.getLogger(CategoryActivity.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    	Category category = new Category();
+        System.out.println("==== Delete Category =====");
+        System.out.println("Choose Category ID to delete : ");
+        int id = scanner.nextInt();
+        category.setId(id);
+        System.out.println("- Category ID : "+category.getId());
+        
+        boolean loop = false;
+        while(loop == false) {  
+            System.out.println("Are you sure to delete product? (Yes/No)");
+            String answer = scanner.next();
+            if (answer.equals("Yes")) {
+                try {
+                    db.deleteCategory(category);
+                    this.welcomeCategoryActivity();
+                    break;
+                } catch (Exception ex) {
+                    Logger.getLogger(ProductActivity.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else if (answer.equals("No")) {
+                this.welcomeCategoryActivity();
+                break;
+            }
+        }
+    	
 	}
 
-    private void searchCategory() {
-		// TODO Auto-generated method stub
-		
-	}
+    public void searchCategory() {
+        boolean loop = false;
+        System.out.println(helper.textH2("Search Category"));
+        System.out.println("Please choose the option to search category");
+        System.out.println("1. Search category by name");
+        System.out.println("0. Back");
+        System.out.print("Write : ");
+        String option = scanner.next();
+        while (loop == false) {
+            if (option.equals("1")) {
+                this.searchCategoryByFilter("name");
+                break;
+            } else {
+                System.out.println("Wrong option, please choose the right option below :");
+            }
+        }
+    }
+    
+    public void searchCategoryByFilter(String filter) {
+        System.out.println(helper.textH3("Search Category By " + helper.capitailizeWord(filter)));
+        System.out.print("Please input the product " + filter + ": ");
+            LOGGER.log( Level.INFO, "// filter : "+filter );
+        try {
+            String keyword = scanner.next();
+            LOGGER.log( Level.INFO, "// keyword : "+keyword );
+            db.getCategoryBySearch(keyword, filter);
+        } catch (Exception ex) {
+            Logger.getLogger(CategoryActivity.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+        } finally {
+            helper.endSection();
+        }
+    } 
 }

@@ -12,6 +12,7 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import softwareag.mini.project.interfaces.ProductActivityInterface;
+import softwareag.mini.project.model.Category;
 import softwareag.mini.project.model.Product;
 import softwareag.mini.project.util.DatabaseUtil;
 import softwareag.mini.project.util.Helper;
@@ -85,14 +86,21 @@ public class ProductActivity implements ProductActivityInterface {
         System.out.println("Product name : ");
         String name = scanner.next();
         product.setName(name);
-        System.out.println("product name : "+product.getName());
+        System.out.println("Product name : "+product.getName());
         System.out.println("Category list : ");
         //TOOD:5show category list
+        try {
+            db.getCategories();
+        } catch (Exception ex) {
+            Logger.getLogger(CategoryActivity.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         System.out.println("Category ID : ");
         product.setIdCategory(scanner.nextInt());
         System.out.println("New Product : ");
-        System.out.println("- name : "+product.getName());
-        System.out.println("- category ID : "+product.getIdCategory());
+        System.out.println("- Product Name : "+product.getName());
+        System.out.println("- Category ID : "+product.getIdCategory());
+        System.out.println("- Quantity : "+product.getQuantity());
         
         boolean loop = false;
         while(loop == false) {  
@@ -115,12 +123,72 @@ public class ProductActivity implements ProductActivityInterface {
         
     private void updateProduct() {
 		// TODO Auto-generated method stub
-		
+        try {
+            db.getProducts();
+        } catch (Exception ex) {
+            Logger.getLogger(ProductActivity.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    	Product product = new Product();
+        System.out.println("==== Update Product =====");
+        System.out.println("Choose Product ID to update : ");
+        int id = scanner.nextInt();
+        product.setId(id);
+        System.out.println("- Product ID : "+product.getId());
+        
+        String name = scanner.next();
+        product.setName(name);
+        System.out.println("- Product Name : "+product.getName());
+        
+        boolean loop = false;
+        while(loop == false) {  
+            System.out.println("Are you sure to update product? (Yes/No)");
+            String answer = scanner.next();
+            if (answer.equals("Yes")) {
+                try {
+                    db.updateProduct(product);
+                    this.welcomeProductActivity();
+                    break;
+                } catch (Exception ex) {
+                    Logger.getLogger(ProductActivity.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else if (answer.equals("No")) {
+                this.welcomeProductActivity();
+                break;
+            }
+        }
 	}
 
 	private void deleteProduct() {
 		// TODO Auto-generated method stub
-		
+		try {
+            db.getProducts();
+        } catch (Exception ex) {
+            Logger.getLogger(ProductActivity.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    	Product product = new Product();
+        System.out.println("==== Delete Product =====");
+        System.out.println("Choose Product ID to delete : ");
+        int id = scanner.nextInt();
+        product.setId(id);
+        System.out.println("- Product ID : "+product.getId());
+        
+        boolean loop = false;
+        while(loop == false) {  
+            System.out.println("Are you sure to delete product? (Yes/No)");
+            String answer = scanner.next();
+            if (answer.equals("Yes")) {
+                try {
+                    db.deleteProduct(product);
+                    this.welcomeProductActivity();
+                    break;
+                } catch (Exception ex) {
+                    Logger.getLogger(ProductActivity.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else if (answer.equals("No")) {
+                this.welcomeProductActivity();
+                break;
+            }
+        }
 	}
 
     public void searchProduct() {
