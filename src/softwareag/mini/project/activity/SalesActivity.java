@@ -5,10 +5,20 @@
  */
 package softwareag.mini.project.activity;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import softwareag.mini.project.comparator.ReportComparatorByDate;
+import softwareag.mini.project.comparator.ReportComparatorByQuantity;
 import softwareag.mini.project.interfaces.SalesActivityInterface;
+import softwareag.mini.project.model.Product;
 import softwareag.mini.project.util.DatabaseUtil;
 import softwareag.mini.project.util.Helper;
 
@@ -21,6 +31,7 @@ public class SalesActivity implements SalesActivityInterface {
     private Scanner scanner = null;
     private DatabaseUtil db = null;
     private Helper helper = null;
+    private File file = null;
     private static final Logger LOGGER = Logger.getLogger( SalesActivity.class.getName() );
     
     public SalesActivity() {
@@ -176,6 +187,103 @@ public class SalesActivity implements SalesActivityInterface {
             } catch (Exception ex) {
                 Logger.getLogger(PurchaseActivity.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
+        
+        helper.endSection();
+    }
+
+    @Override
+    public void generateReport() {
+        List<Product> productList = new ArrayList<>();
+        boolean loop = false;
+        
+        System.out.println(helper.textH3("Generate Report Sales"));
+        try {
+            db.getCategories();
+        } catch (Exception ex) {
+            Logger.getLogger(SalesActivity.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        while(!loop) {
+            System.out.print("Please input the category ID : ");
+
+            String idCategory = scanner.next();
+            if (idCategory.matches("[0-9]+")) {
+                try {
+                    productList.addAll(db.getReportByProductCategory("sales", Integer.valueOf(idCategory)));
+                } catch (Exception ex) {
+                    Logger.getLogger(SalesActivity.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                break;
+            } else {
+                System.out.println("Please write right number");
+            }
+        }
+        
+        System.out.println("Order by :");
+        System.out.println("1. Quantity Ascending");
+        System.out.println("2. Quantity Descending");
+        System.out.println("3. Sales Date Ascending");
+        System.out.println("4. Sales Date Descending");
+        
+        while(!loop) {
+            System.out.print("Write : ");
+            String order = scanner.next();
+            if (order.equals("1")) {
+                Collections.sort(productList, new ReportComparatorByQuantity());
+                break;
+            }
+            else if (order.equals("2")) {
+                Collections.sort(productList, new ReportComparatorByQuantity().reversed());
+                break;
+            }
+            else if (order.equals("3")) {
+                Collections.sort(productList, new ReportComparatorByDate());
+                break;
+            }
+            else if (order.equals("4")) {
+                Collections.sort(productList, new ReportComparatorByDate().reversed());
+                break;
+            }
+            else {
+                System.out.println("Wrong option, please choose the right option below :");
+            }
+        }
+        
+        for (Product prod : productList) 
+            System.out.println(prod);
+        
+        System.out.print("Write the generate CSV file name :");
+        String fileName = scanner.next();
+        StringBuilder fileNameBuilder = new StringBuilder();
+        fileNameBuilder.append(fileName);
+        fileNameBuilder.append(".csv");
+        
+        file = new File("D:", fileNameBuilder.toString());
+        try {
+            if(file.exists())
+                System.out.println("File exist");
+            else {
+                System.out.println("File doesn't exist, I will create one");
+                file.createNewFile();
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        }
+        
+        try (FileWriter fileWriter = new FileWriter(file)) {
+            for (Product prod : productList) {
+                fileWriter.write(prod.getCreatedAt() + ", " +
+                        prod.getName() + ", " +
+                        String.valueOf(prod.getQuantity()) + ", " +
+                        prod.getCategoryName() + "\n");
+                fileWriter.flush();
+                
+            }
+        } catch (Exception e) {
+            Logger.getLogger(SalesActivity.class.getName()).log(Level.SEVERE, e.getMessage(), e);
+        } finally {
+            System.out.println("File has been created");
         }
         
         helper.endSection();
