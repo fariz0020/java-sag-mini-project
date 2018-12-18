@@ -101,7 +101,8 @@ public class PurchaseActivity implements PurchaseActivityInterface{
         }
     }
     
-    private void addProductOfPurchase(int idPurchase, int i) {
+    @Override
+    public void addProductOfPurchase(int idPurchase, int i) {
         try {
             db.readDataBase();
             System.out.println("Product #"+i);
@@ -129,12 +130,17 @@ public class PurchaseActivity implements PurchaseActivityInterface{
             System.out.println("0. Back");
             System.out.print("Write : ");
             String option = scanner.next();
+            
+            System.out.println("Order by :");
+            System.out.println("1. Ascending");
+            System.out.println("2. Descending");
+            System.out.print("Write : ");
+            String order = scanner.next();
             if (option.equals("1")) {
-                this.advanceSearchPurchase(option);
+                this.advanceSearchPurchase(option, order);
                 break;
             } else if (option.equals("2")) {
-                //TODO: lanjut disini
-                this.advanceSearchPurchase(option);
+                this.advanceSearchPurchase(option, order);
                 break;
             } else if (option.equals("0")) {
                 new PurchaseActivity();
@@ -142,27 +148,27 @@ public class PurchaseActivity implements PurchaseActivityInterface{
                 System.out.println("Wrong option, please choose the right option below :");
             }
         }
-        System.exit(0);
+        new MainActivity();
     }
     
-    private void advanceSearchPurchase(String option) {
+    @Override
+    public void advanceSearchPurchase(String option, String order) {
         String date, date2;
         System.out.println("Input date with format yyyy-mm-dd");
         date = scanner.next();
-        System.out.println(date);
+        String orderOption = (order.equals("1")) ? "ASC" : "DESC";
         
         if (option.equals("1")) {
             try {
-                db.getPurchaseBySearch(date, "");
+                db.getPurchaseBySearch(date, "", orderOption);
             } catch (Exception ex) {
                 Logger.getLogger(PurchaseActivity.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {    
             System.out.println("Input last date with format yyyy-mm-dd");
             date2 = scanner.next();
-            System.out.println(date2);
             try {
-                db.getPurchaseBySearch(date, date2);
+                db.getPurchaseBySearch(date, date2, orderOption);
             } catch (Exception ex) {
                 Logger.getLogger(PurchaseActivity.class.getName()).log(Level.SEVERE, null, ex);
             }
