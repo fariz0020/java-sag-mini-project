@@ -253,13 +253,16 @@ public class SalesActivity implements SalesActivityInterface {
         for (Product prod : productList) 
             System.out.println(prod);
         
-        System.out.print("Write the generate CSV file name :");
+        System.out.println("Write the source path : ");
+        String path = scanner.next();
+        
+        System.out.print("Write the generate CSV file name : ");
         String fileName = scanner.next();
         StringBuilder fileNameBuilder = new StringBuilder();
         fileNameBuilder.append(fileName);
         fileNameBuilder.append(".csv");
         
-        file = new File("D:", fileNameBuilder.toString());
+        file = new File(path, fileNameBuilder.toString());
         try {
             if(file.exists())
                 System.out.println("File exist");
