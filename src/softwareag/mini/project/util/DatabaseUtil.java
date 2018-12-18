@@ -389,7 +389,7 @@ public class DatabaseUtil {
                         keyword, keyword, keyword);
             
             preparedStatement = connect.prepareStatement(sql);
-            LOGGER.log( Level.INFO, "// query : " + preparedStatement.toString() );
+            System.out.println(preparedStatement);
             resultSet = preparedStatement.executeQuery();
             
             int size = 0;
@@ -420,7 +420,7 @@ public class DatabaseUtil {
                 System.out.println("Category: " + ((resultSet.getString("category_name") != null) ? resultSet.getString("category_name") : "-"));
                 System.out.println("Created at: " + resultSet.getString("created_at"));
                 System.out.println("Last update: " + resultSet.getString("updated_at"));
-                System.out.println("Deleted at: " + ((resultSet.getString("deleted_at") != null) ? resultSet.getString("deleted_at") : "-"));
+                System.out.println("Deleted at: " + ((resultSet.getString("deleted_at") == null) ? "-" : resultSet.getString("deleted_at") ));
                 System.out.println("");
             }
         }
