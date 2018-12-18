@@ -76,6 +76,7 @@ public class CategoryActivity {
             //  TODO Auto-generated method stub
         try {
             db.getCategories();
+            helper.endSection();
         } catch (Exception ex) {
             Logger.getLogger(CategoryActivity.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -91,9 +92,9 @@ public class CategoryActivity {
 
         boolean loop = false;
         while(loop == false) {  
-            System.out.println("Are you sure to insert new category ? (Yes/No)");
+            System.out.println("Are you sure to insert new category ? (yes/no)");
             String answer = scanner.next();
-            if (answer.equals("Yes")) {
+            if (answer.equals("yes")) {
                 try {
                     db.addCategory(category);
                     this.welcomeCategoryActivity();
@@ -101,7 +102,7 @@ public class CategoryActivity {
                 } catch (Exception ex) {
                     Logger.getLogger(CategoryActivity.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } else if (answer.equals("No")) {
+            } else if (answer.equals("no")) {
                 this.welcomeCategoryActivity();
                 break;
             }
@@ -121,24 +122,25 @@ public class CategoryActivity {
         int id = scanner.nextInt();
         category.setId(id);
         System.out.println("- Category ID : "+category.getId());
-        
+        System.out.println("Choose Category Name: ");
         String name = scanner.next();
         category.setName(name);
         System.out.println("- Category Name : "+category.getName());
         
         boolean loop = false;
         while(loop == false) {  
-            System.out.println("Are you sure to update category? (Yes/No)");
+            System.out.println("Are you sure to update category? (yes/no)");
             String answer = scanner.next();
-            if (answer.equals("Yes")) {
+            if (answer.equals("yes")) {
                 try {
                     db.updateCategory(category);
+                    helper.endSection();
                     this.welcomeCategoryActivity();
                     break;
                 } catch (Exception ex) {
                     Logger.getLogger(CategoryActivity.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } else if (answer.equals("No")) {
+            } else if (answer.equals("no")) {
                 this.welcomeCategoryActivity();
                 break;
             }
@@ -161,17 +163,18 @@ public class CategoryActivity {
         
         boolean loop = false;
         while(loop == false) {  
-            System.out.println("Are you sure to delete product? (Yes/No)");
+            System.out.println("Are you sure to delete product? (yes/no)");
             String answer = scanner.next();
-            if (answer.equals("Yes")) {
+            if (answer.equals("yes")) {
                 try {
                     db.deleteCategory(category);
+                    helper.endSection();
                     this.welcomeCategoryActivity();
                     break;
                 } catch (Exception ex) {
                     Logger.getLogger(ProductActivity.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } else if (answer.equals("No")) {
+            } else if (answer.equals("no")) {
                 this.welcomeCategoryActivity();
                 break;
             }

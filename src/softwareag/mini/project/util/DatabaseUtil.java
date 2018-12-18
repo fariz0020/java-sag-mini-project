@@ -46,7 +46,7 @@ public class DatabaseUtil {
             statement = connect.createStatement();
             // Result set get the result of the SQL query
             resultSet = statement
-                    .executeQuery("select * from products");
+                    .executeQuery("select * from products where deleted_at is null");
             writeResultSetProduct(resultSet);
         } catch (Exception e) {
             throw e;
@@ -266,7 +266,7 @@ public class DatabaseUtil {
             connect = DriverManager
                     .getConnection("jdbc:mysql://localhost:3306/"+Constant.DB_SCHEMA, properties);
            String sql = String.format("UPDATE products SET deleted_at = NOW() where id='%d'", product.getId());
-           System.out.println(sql);
+
             preparedStatement = connect
                     .prepareStatement(sql);
             // "myuser, webpage, datum, summary, COMMENTS from feedback.comments");
