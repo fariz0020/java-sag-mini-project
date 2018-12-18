@@ -40,7 +40,7 @@ public class PurchaseActivity implements PurchaseActivityInterface{
             System.out.println("2. Add Purchase");
             System.out.println("3. Advance Search Purchase");
             System.out.println("0. Back");
-            System.out.println("Write : ");
+            System.out.print("Write : ");
             String option = scanner.next();
             if (option.equals("1")) {
                 this.showPurchases();
