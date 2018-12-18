@@ -304,7 +304,7 @@ public class DatabaseUtil {
                 resultSet.last();
                 size = resultSet.getRow();
                 resultSet.beforeFirst();
-                writeGetPurchase(resultSet, size);
+                writeGetPurchaseSale(resultSet, size);
             }
                
         } catch (Exception e) {
@@ -314,7 +314,7 @@ public class DatabaseUtil {
         }
     }
     
-    public void writeGetPurchase(ResultSet resultSet, int max) throws SQLException {
+    public void writeGetPurchaseSale(ResultSet resultSet, int max) throws SQLException {
         if (resultSet.next() == false ) 
             System.out.println("The result is empty");
         else {
@@ -467,7 +467,7 @@ public class DatabaseUtil {
                 resultSet.last();
                 size = resultSet.getRow();
                 resultSet.beforeFirst();
-                this.writeGetPurchaseAdvance(resultSet, size);
+                this.writeGetPurchaseSalesAdvance(resultSet, size);
             }
             
         } catch (Exception e) {
@@ -478,7 +478,7 @@ public class DatabaseUtil {
         
     }
     
-    public void writeGetPurchaseAdvance(ResultSet resultSet, int max) throws SQLException {
+    public void writeGetPurchaseSalesAdvance(ResultSet resultSet, int max) throws SQLException {
         if (resultSet.next() == false ) 
             System.out.println("The result is empty");
         else {
@@ -490,6 +490,153 @@ public class DatabaseUtil {
                 System.out.println("");
             }
         }
+    }
+    
+    public void getAllSales() throws Exception {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            
+            Properties properties = new Properties();
+            properties.setProperty("user", Constant.DB_USER);
+            properties.setProperty("password", Constant.DB_PASSWORD);
+            properties.setProperty("useSSL", Constant.DB_USESSL);
+            properties.setProperty("serverTimezone", Constant.DB_SERVERTIMEZONE);
+            
+            connect = DriverManager
+                    .getConnection("jdbc:mysql://localhost:3306/"+Constant.DB_SCHEMA, properties);
+
+            statement = connect.createStatement();
+            resultSet = statement
+                    .executeQuery("SELECT s.id, count(ps.id_product) total_item, sum(ps.quantity) total_quantity, "
+                            + "s.created_at, s.updated_at, s.deleted_at  "
+                            + "FROM sales s JOIN products_sales ps ON s.id = ps.id_sale "
+                            + "WHERE s.deleted_at IS NULL "
+                            + "GROUP BY s.id");
+            
+            int size = 0;
+            if (resultSet != null) 
+            {
+                resultSet.last();
+                size = resultSet.getRow();
+                resultSet.beforeFirst();
+                writeGetPurchaseSale(resultSet, size);
+            }
+               
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            close();
+        }
+    }
+    
+    public int addSale() throws Exception {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            
+            Properties properties = new Properties();
+            properties.setProperty("user", Constant.DB_USER);
+            properties.setProperty("password", Constant.DB_PASSWORD);
+            properties.setProperty("useSSL", Constant.DB_USESSL);
+            properties.setProperty("serverTimezone", Constant.DB_SERVERTIMEZONE);
+            
+            connect = DriverManager
+                    .getConnection("jdbc:mysql://localhost:3306/"+Constant.DB_SCHEMA, properties);
+
+            preparedStatement = connect.prepareStatement("INSERT INTO sales VALUES ()", Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.executeUpdate();
+            
+            ResultSet rs = preparedStatement.getGeneratedKeys();
+            
+            if(rs.next()){
+                return rs.getInt(1);
+            }
+            return 0;
+            
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            close();
+        }
+    }
+        
+    public void addProductSale(int idProduct, int idSale, int quantity) throws Exception {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            
+            Properties properties = new Properties();
+            properties.setProperty("user", Constant.DB_USER);
+            properties.setProperty("password", Constant.DB_PASSWORD);
+            properties.setProperty("useSSL", Constant.DB_USESSL);
+            properties.setProperty("serverTimezone", Constant.DB_SERVERTIMEZONE);
+            
+            connect = DriverManager
+                    .getConnection("jdbc:mysql://localhost:3306/"+Constant.DB_SCHEMA, properties);
+
+            statement = connect.createStatement();
+            String query = String.format("INSERT INTO products_sales(id_product, id_sale, quantity) VALUES (%d, %d, %d)", 
+                    idProduct, idSale, quantity);
+            statement.execute(query);
+            
+            this.updateProductQuantity(idProduct, quantity, "-");
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            close();
+        }
+    }
+    
+    public void getSaleBySearch(String date1, String date2, String order) throws Exception {
+        int currentQuantity = 0, updateQuantity = 0;
+        String query = "";
+        StringBuilder queryBuilder = new StringBuilder();
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            
+            Properties properties = new Properties();
+            properties.setProperty("user", Constant.DB_USER);
+            properties.setProperty("password", Constant.DB_PASSWORD);
+            properties.setProperty("useSSL", Constant.DB_USESSL);
+            properties.setProperty("serverTimezone", Constant.DB_SERVERTIMEZONE);
+            
+            connect = DriverManager
+                    .getConnection("jdbc:mysql://localhost:3306/"+Constant.DB_SCHEMA, properties);
+
+            if (date2.isEmpty())
+                query = String.format("SELECT p.name, sum(ps.quantity) quantity FROM products p "
+                        + "JOIN products_sales ps ON p.id = ps.id_product "
+                        + "JOIN sales s ON s.id = ps.id_sale "
+                        + "WHERE s.created_at LIKE '%s%%' AND s.deleted_at IS NULL "
+                        + "GROUP BY p.name", date1);
+            else
+                query = String.format("SELECT p.name, sum(ps.quantity) quantity FROM products p "
+                        + "JOIN products_sales ps ON p.id = ps.id_product "
+                        + "JOIN sales s ON s.id = ps.id_sale "
+                        + "WHERE s.created_at BETWEEN '%s 00:00:00' AND '%s 23:59:59' "
+                        + "AND s.deleted_at IS NULL "
+                        + "GROUP BY p.name", date1, date2);
+            
+            queryBuilder.append(query);
+            queryBuilder.append(" ORDER BY quantity "+order);
+            
+            statement = connect.createStatement();
+            ResultSet resultSet = statement.executeQuery(queryBuilder.toString());
+            
+            int size = 0;
+            if (resultSet != null) 
+            {
+                resultSet.last();
+                size = resultSet.getRow();
+                resultSet.beforeFirst();
+                this.writeGetPurchaseSalesAdvance(resultSet, size);
+            }
+            
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            close();
+        }
         
     }
+  
 }

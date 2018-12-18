@@ -51,6 +51,5 @@ public class MainActivity {
                 System.out.println("Wrong option, please choose the right option below :");
             }
         }
-        
     }
 }
