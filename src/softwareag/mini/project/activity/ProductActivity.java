@@ -75,7 +75,7 @@ public class ProductActivity implements ProductActivityInterface {
     public void showProduct() {
         try {
             db.readDataBase();
-
+            helper.endSection();
         } catch (Exception ex) {
             Logger.getLogger(ProductActivity.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -92,6 +92,7 @@ public class ProductActivity implements ProductActivityInterface {
         //TOOD:5show category list
         try {
             db.getCategories();
+            
         } catch (Exception ex) {
             Logger.getLogger(CategoryActivity.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -105,17 +106,18 @@ public class ProductActivity implements ProductActivityInterface {
         
         boolean loop = false;
         while(loop == false) {  
-            System.out.println("Are you sure to insert new product ? (true/false)");
+            System.out.println("Are you sure to insert new product ? (yes/no)");
             String answer = scanner.next();
-            if (answer.equals("true")) {
+            if (answer.equals("yes")) {
                 try {
                     db.addProduct(product);
+                    helper.endSection();
                     this.welcomeProductActivity();
                     break;
                 } catch (Exception ex) {
                     Logger.getLogger(ProductActivity.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } else if (answer.equals("false")) {
+            } else if (answer.equals("no")) {
                 this.welcomeProductActivity();
                 break;
             }
@@ -135,24 +137,25 @@ public class ProductActivity implements ProductActivityInterface {
         int id = scanner.nextInt();
         product.setId(id);
         System.out.println("- Product ID : "+product.getId());
-        
+        System.out.println("Choose Product Name:");
         String name = scanner.next();
         product.setName(name);
         System.out.println("- Product Name : "+product.getName());
         
         boolean loop = false;
         while(loop == false) {  
-            System.out.println("Are you sure to update product? (Yes/No)");
+            System.out.println("Are you sure to update product? (yes/no)");
             String answer = scanner.next();
-            if (answer.equals("Yes")) {
+            if (answer.equals("yes")) {
                 try {
                     db.updateProduct(product);
+                    helper.endSection();
                     this.welcomeProductActivity();
                     break;
                 } catch (Exception ex) {
                     Logger.getLogger(ProductActivity.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } else if (answer.equals("No")) {
+            } else if (answer.equals("no")) {
                 this.welcomeProductActivity();
                 break;
             }
@@ -175,17 +178,18 @@ public class ProductActivity implements ProductActivityInterface {
         
         boolean loop = false;
         while(loop == false) {  
-            System.out.println("Are you sure to delete product? (Yes/No)");
+            System.out.println("Are you sure to delete product? (yes/no)");
             String answer = scanner.next();
-            if (answer.equals("Yes")) {
+            if (answer.equals("yes")) {
                 try {
                     db.deleteProduct(product);
+                    helper.endSection();
                     this.welcomeProductActivity();
                     break;
                 } catch (Exception ex) {
                     Logger.getLogger(ProductActivity.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } else if (answer.equals("No")) {
+            } else if (answer.equals("no")) {
                 this.welcomeProductActivity();
                 break;
             }
